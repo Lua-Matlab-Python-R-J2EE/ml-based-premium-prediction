@@ -142,13 +142,12 @@ if st.button("Predict"):
     #   2. Apply scaling transformation
     #   3. Select appropriate model (young vs rest based on age)
     #   4. Generate prediction using trained ML model
-    premium_cost = predict(input_dict)
     
     # Extract the predicted value from the array and format to 2 decimal places
-    # Model returns array like [12345.67], so we take first element
-    premium_value = premium_cost[0]
+    premium_value = predict(input_dict)
     
     # Display the predicted premium in a success message box (green background)
+    # and format to 2 decimal places
     st.success(f"Predicted insurance premium: £{premium_value:.2f}")
 
 

@@ -23,13 +23,18 @@ scaler_young = load("artifacts/scaler_young.joblib")
 # Define the exact column names expected by the model (18 features after VIF analysis)
 # These columns match the training data structure after one-hot encoding
 # Note: 'income_level_encode' was dropped during VIF analysis and is NOT included here
+'''
 expected_columns = ['age', 'number_of_dependants', 'income_thousands', 'genetical_risk', 'total_risk_scores',
                     'insurance_plan_encode', 'gender_male', 'marital_status_unmarried',
                     'region_northwest', 'region_southeast', 'region_southwest',
                     'bmi_category_obesity', 'bmi_category_overweight', 'bmi_category_underweight',
                     'smoking_status_occasional', 'smoking_status_regular',
-                    'employment_status_freelancer', 'employment_status_salaried'
-                    ]
+                    'employment_status_freelancer', 'employment_status_salaried']
+'''
+# LOAD FROM TRAINING ARTIFACT
+FEATURE_NAMES = load("artifacts/feature_names.joblib")
+
+
 
 # ============================================================================
 # ENCODING DICTIONARIES
@@ -82,7 +87,10 @@ def preprocess_input(input_dict):
 
     # Initialize DataFrame with all expected columns set to 0 (default for one-hot encoding)
     # This ensures all binary columns exist even if user doesn't select those options
-    df = pd.DataFrame(0, columns=expected_columns, index=[0])
+    # df = pd.DataFrame(0, columns=expected_columns, index=[0])
+
+    # Use the FEATURE_NAMES uploaded from joblib
+    df = pd.DataFrame(0, columns=FEATURE_NAMES, index=[0])
 
     # ========================================================================
     # PARSE INPUT DICTIONARY AND POPULATE DATAFRAME
@@ -178,74 +186,37 @@ def handle_scaler(age, df):
     Returns:
         scaled_df: Scaled DataFrame with 18 features ready for model prediction
     """
-    if age <= 25:
-        scaler_obj = scaler_young
-    else:
-        scaler_obj = scaler_rest
+    scaler_obj = scaler_young if age <= 25 else scaler_rest
 
+    '''
+    # Used for debugging
     # Get feature names (with fallback for old scikit-learn)
     if hasattr(scaler_obj, 'feature_names_in_'):
         expected_features = scaler_obj.feature_names_in_
     else:
         # Fallback: use df columns as they should already be correct
+        print("Fallback: use df columns as they should already be correct")
         expected_features = df.columns
 
     print(f"\n df.columns({len(df.columns)}): {df.columns.tolist()}")
     print(f"\n Expected features ({len(expected_features)}): {list(expected_features)}")
+    '''
+
+    # handle missing column safely. If missing columns appear (e.g. one-hot encoding not triggered):
+    df = df.reindex(columns=FEATURE_NAMES).fillna(0)
 
     # Transform using the DataFrame directly
     scaled_array = scaler_obj.transform(df)
 
     scaled_df = pd.DataFrame(
         scaled_array,
-        columns = expected_features
+        columns = FEATURE_NAMES
     )
 
     print(f"\n After scaling, scaled_df.shape: {scaled_df.shape}")
 
     return scaled_df
 
-
-'''
-def handle_scaler(age, df):
-    # OLD VERSION  - NOT WORKING ON CLOUD
-    
-    # Select appropriate scaler based on age threshold
-    # Age <= 25: use young scaler (trained on younger population data)
-    # Age > 25: use rest scaler (trained on general population data)
-    if age <= 25:
-        scaler_obj = scaler_young
-    else:
-        scaler_obj = scaler_rest
-
-    # CRITICAL FIX: Add temporary column to match scaler's expected 19 features
-    # During training, scaler was fitted BEFORE VIF analysis dropped income_level_encode
-    # We add it temporarily with value 0, transform, then drop it again
-    df['income_level_encode'] = 0
-    
-    # Debug output: verify column counts
-    print(f"\n df.columns({len(df.columns)}) : , {df.columns}")
-    print(f"\n scaler_obj.feature_names_in_({len(scaler_obj.feature_names_in_)}) : , {scaler_obj.feature_names_in_}")
-
-    # Apply MinMaxScaler transformation (scales all features to 0-1 range)
-    # Must use scaler's expected column order for correct transformation
-    cols_to_org_scale = scaler_obj.transform(df[scaler_obj.feature_names_in_])
-
-    # Convert scaled numpy array back to DataFrame for easier manipulation
-    scaled_df = pd.DataFrame(
-        cols_to_org_scale,
-        columns=scaler_obj.feature_names_in_
-    )
-
-    # Drop the temporary income_level_encode column to match model's expected 18 features
-    # This column was removed during VIF analysis due to high correlation with income_thousands
-    scaled_df = scaled_df.drop('income_level_encode', axis=1)
-
-    # Debug output: verify final shape is (1, 18)
-    print(f"\n After dropping, scaled_df.shape: {scaled_df.shape}")
-
-    return scaled_df
-'''
 
 # ============================================================================
 # RISK SCORE CALCULATION FUNCTION
@@ -302,7 +273,7 @@ def predict(input_dict):
     
     # Debug output: print raw input dictionary
     print(input_dict)
-    
+
     # Preprocess input into model-ready format (18 scaled features)
     input_df = preprocess_input(input_dict)
 
@@ -312,6 +283,12 @@ def predict(input_dict):
         model = model_young
     else:
         model = model_rest
+
+
+    # Sanity check
+    print("Final columns:", input_df.columns.tolist())
+    print("Model expects:", model.n_features_in_)
+
 
     # Generate prediction using selected model
     # Model returns numpy array, e.g., [12345.67]
