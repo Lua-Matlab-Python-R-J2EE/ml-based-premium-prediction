@@ -165,7 +165,7 @@ This application is deployed using Streamlit Cloud with continuous deployment en
 
 ### Deployment Details
 
-* Platform**: Streamlit Cloud
+* Platform: Streamlit Cloud
 * Repository: [GitHub](https://github.com/Lua-Matlab-Python-R-J2EE/ml-based-premium-prediction)
 * Branch: `main`
 * Python Version: 3.10
