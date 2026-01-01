@@ -166,18 +166,49 @@ def preprocess_input(input_dict):
 def handle_scaler(age, df):
     """
     Apply appropriate scaler transformation based on user's age.
-    
+
     Important: The scaler was fitted on 19 features (including income_level_encode),
     but the model expects 18 features (without income_level_encode).
     This function handles that discrepancy.
-    
+
     Args:
         age: User's age (determines which scaler/model to use)
         df: DataFrame with 18 features
-        
+
     Returns:
         scaled_df: Scaled DataFrame with 18 features ready for model prediction
     """
+    if age <= 25:
+        scaler_obj = scaler_young
+    else:
+        scaler_obj = scaler_rest
+
+    # Get feature names (with fallback for old scikit-learn)
+    if hasattr(scaler_obj, 'feature_names_in_'):
+        expected_features = scaler_obj.feature_names_in_
+    else:
+        # Fallback: use df columns as they should already be correct
+        expected_features = df.columns
+
+    print(f"\n df.columns({len(df.columns)}): {df.columns.tolist()}")
+    print(f"\n Expected features ({len(expected_features)}): {list(expected_features)}")
+
+    # Transform using the DataFrame directly
+    scaled_array = scaler_obj.transform(df)
+
+    scaled_df = pd.DataFrame(
+        scaled_array,
+        columns = expected_features
+    )
+
+    print(f"\n After scaling, scaled_df.shape: {scaled_df.shape}")
+
+    return scaled_df
+
+
+'''
+def handle_scaler(age, df):
+    # OLD VERSION  - NOT WORKING ON CLOUD
     
     # Select appropriate scaler based on age threshold
     # Age <= 25: use young scaler (trained on younger population data)
@@ -214,7 +245,7 @@ def handle_scaler(age, df):
     print(f"\n After dropping, scaled_df.shape: {scaled_df.shape}")
 
     return scaled_df
-
+'''
 
 # ============================================================================
 # RISK SCORE CALCULATION FUNCTION
