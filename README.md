@@ -14,7 +14,7 @@
 
 ---
 
-## 📊 Dataset Information
+## Dataset Information
 
 * Size: 50,000 records
 * Type: Synthetic dataset
