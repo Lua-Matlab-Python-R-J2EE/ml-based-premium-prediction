@@ -148,7 +148,7 @@ if st.button("Predict"):
     
     # Display the predicted premium in a success message box (green background)
     # and format to 2 decimal places
-    st.success(f"Predicted insurance premium: £{premium_value:.2f}")
+    st.success(f"Predicted annual insurance premium is: £{premium_value:.2f}")
 
 
 
