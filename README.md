@@ -133,7 +133,8 @@ ml-based-premium-prediction/
 │
 ├── notebooks/                  # Training & EDA notebooks
 │   ├── ml_premium_prediction_young_with_gr.ipynb
-│   └── ml_premium_prediction_rest_with_gr.ipynb
+│   ├── ml_premium_prediction_rest_with_gr.ipynb
+│   └── ml_premium_prediction.ipynb
 │
 ├── .devcontainer/              # VS Code / Codespaces config
 └── README.md
