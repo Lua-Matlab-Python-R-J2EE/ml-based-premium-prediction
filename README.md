@@ -59,9 +59,6 @@
   - R2 score is the primary evaluation metric, supplemented by residual error analysis
   - Performance targets are achievable: R2 >97% and residual errors <10% on 95% of predictions
 
-- Known Limitations
-  - Model shows significantly higher errors (>10%) for younger individuals (age ≤25), comprising ~30% of test set errors
-  - This suggests potential need for age-based model segmentation or additional data collection for younger demographics
 
 ---
 
