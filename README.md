@@ -38,6 +38,33 @@
 
 ---
 
+## Assumptions
+
+- Data Quality
+  - The dataset of ~50,000 records is representative of the target population
+  - Missing values (26 total records) are missing at random and their removal does not introduce bias
+  - Negative dependents (-1, -3) were data entry errors; absolute values represent true counts
+  - Ages >100 (58 records) and incomes >103K (10 records using 4*IQR) are genuine outliers to be excluded
+
+- Business Domain
+  - Risk scores for medical conditions reflect relative severity: None (0), Thyroid (5), Diabetes/High BP (6), Heart disease (8)
+  - Multiple conditions have additive risk (e.g., Diabetes & Heart disease = 14)
+  - Insurance plans follow natural hierarchy: Bronze (1) < Silver (2) < Gold (3)
+  - Income levels are ordinal: <10K (1) < 10K-25K (2) < 25K-40K (3) < >40K (4)
+
+- Modeling
+  - 70/30 train-test split provides adequate data for training and validation
+  - VIF threshold of 5 is appropriate for multicollinearity; removing income_level_encode (VIF=12.4) addresses this
+  - MinMaxScaler normalization applied after train-test split would prevent data leakage (noted for v2 improvement)
+  - R2 score is the primary evaluation metric, supplemented by residual error analysis
+  - Performance targets are achievable: R2 >97% and residual errors <10% on 95% of predictions
+
+- Known Limitations
+  - Model shows significantly higher errors (>10%) for younger individuals (age ≤25), comprising ~30% of test set errors
+  - This suggests potential need for age-based model segmentation or additional data collection for younger demographics
+
+---
+
 ## Key Features
 
 * Interactive Streamlit UI for real‑time predictions
