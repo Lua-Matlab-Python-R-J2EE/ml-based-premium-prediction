@@ -41,14 +41,14 @@
 --- 
 
 ## Project Structure
-
+```
 ml-based-premium-prediction/
 ├── main.py                  # Streamlit app entry point
 ├── prediction_helper.py     # Preprocessing + inference logic
 ├── requirements.txt         # Pinned runtime dependencies
 ├── artifacts/               # Serialised models, scalers, feature names
 └── notebooks/               # EDA, feature engineering, model training (reference only)
-
+```
 ---
 
 ## Limitations & Version 2 (In Progress)
