@@ -18,9 +18,10 @@
 ---
 
 ## Key Results
-Segment | Model | Predictions within ±10% error
-Young customers (≤25) | Linear Regression + genetic risk features | 98%
-All other customers (>25) | XGBoost | 99.98%
+| Segment | Model | Predictions within ±10% error |
+|---------|-------|-------------------------------|
+| Young customers (≤25) | Linear Regression + genetic risk features | 98% |
+| All other customers (>25) | XGBoost | 99.98% |
 
 > A dual-model strategy (separating young customers where genetic risk is a significant predictor) reduced overall prediction error by over 90% compared to a single combined model.
 
