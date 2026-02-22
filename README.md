@@ -41,7 +41,7 @@
 --- 
 
 ## Project Structure
-```
+```plaintext
 ml-based-premium-prediction/
 ├── main.py                  # Streamlit app entry point
 ├── prediction_helper.py     # Preprocessing + inference logic
